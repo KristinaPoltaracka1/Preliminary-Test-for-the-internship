@@ -79,29 +79,29 @@ Comment: I used more natural language to explain my answers, and in the Q2 refer
 Q1. The script above uses SQLite with a LIKE '%...%' search. If you switch to Postgres
 and the documents table grows to 1,000,000 rows, what becomes slow or risky first?
 What would you do about it? 
-*The LIKE '%...%' search means that the query will go through all of the data to check what will contain the word between %, making a full table scan and
+Answer: The LIKE '%...%' search means that the query will go through all of the data to check what will contain the word between %, making a full table scan and
 becoming an issue with huge document amount significantly slowing down the searching process. I believe that it would be better to add proper index and maybe 
-full-text search to make it better. Also a pgvector can be useful, however I haven't had any experience with that and will need to read and practice on how to work with it.*
+full-text search to make it better. Also a pgvector can be useful, however I haven't had any experience with that and will need to read and practice on how to work with it.
 
 
 Q2. The script sends all found documents into the prompt. Why is this a bad idea once
 you have many documents? Briefly describe how a basic RAG approach (chunking +
 embeddings + top-k) would fix this. You don't need to write code.
-*As mentioned previously, such solution is not only time consuming, but also expensive (tokens). A RAG approach splits the documents into smaller
+Answer: As mentioned previously, such solution is not only time consuming, but also expensive (tokens). A RAG approach splits the documents into smaller
 chunks, converts them into embeddings with their meaning, retrieve only the most relevant chunks using top-k similarity search and only those 
-will be further send to the LLM.*
+will be further send to the LLM.
 
 
 Q3. The LLM call has no error handling. Name 3 things that can go wrong when calling
 an external LLM API, and for each — how you would handle it in production.
-*The top three issues i can recall network issues, API rate limit and overall server error. Network failure usually caused by either taking too long to respond or 
+Answer: The top three issues i can recall network issues, API rate limit and overall server error. Network failure usually caused by either taking too long to respond or 
 internet connection drops - to fix it needs to be done a timeout and retry. API rate limits is caused by too many requests, the solution is simple - wait 
 and retry(2s -> 4s -> 8s -> ...). As for the server error caused on the server side - log the information (details of the error) and provide a message to the users
-on the screen (example).*
+on the screen (example).
 
 Q4 (bonus, optional). Imagine this becomes a chatbot that remembers user history.
 What 1-2 Postgres tables would you create? A short schema sketch or plain words —
 both fine.
-*In my opinion useful would be creating a users table to store basic information about each user (ex.: user_id and email). And basing on the previous tasks, 
+Answer: In my opinion useful would be creating a users table to store basic information about each user (ex.: user_id and email). And basing on the previous tasks, 
 creating a messages table with user_id, message content, email and a timestamp. The two tables are connected and can be easily used to provide the information for 
-the chatbot.*
+the chatbot.
