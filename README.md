@@ -2,25 +2,29 @@
 ## Preliminary Test for AI/Automation &amp; Infrastructure Internship
 
 ----------------------------------------------------------
-## Answers to Part 2:
+Answers to Part 2:
 Comment: I kept the entire code and wrote comments directly under the mistakes. 
 
 import sqlite3
 import requests
 
 DB_PATH = "app.db"
-API_KEY = "sk-prod-abc123xyz" # hardcoded
-# This is a very unsafe way of handling API key, making it be exposed to anyone with an access to the repository/code file. These keys needs to be stored 
-# outside of the code, like environment variables or a secrets management system.
+API_KEY = "sk-prod-abc123xyz"
+```
+This is a very unsafe way of handling API key, making it be exposed to anyone with an access to the repository/code file. These keys needs to be stored 
+outside of the code, like environment variables or a secrets management system.
+```
 
 def search_documents(question):
   conn = sqlite3.connect(DB_PATH)
   cursor = conn.cursor()
   query = "SELECT id, title, content FROM documents WHERE content LIKE '%" + question + "%'"
   cursor.execute(query)
-# This creates a possible issue with SQL, because user input is directly inserted into the SQL query,
-# where a malicious user could manipulate the quesry and possibly access data. 
-# User input should be treated as data, instead of an executable SQL code - using parameterized SQL with placeholders in the actual query. 
+```
+This creates a possible issue with SQL, because user input is directly inserted into the SQL query,
+where a malicious user could manipulate the quesry and possibly access data. 
+User input should be treated as data, instead of an executable SQL code - using parameterized SQL with placeholders in the actual query. 
+```
   
   rows = cursor.fetchall()
   conn.close()
@@ -30,10 +34,12 @@ def ask_llm(question, docs):
   context = ""
   for doc in docs:
     context += doc[2] + "\n\n"
-# Techically, its not a mistake, but it sends every(!) retrieved document's content to the LLM as part of the prompt.
-# However, it becomes a problem when the amount of documents is huge, and can become very inefficent and can increase the token usage
-# of the LLM or can fail if the amount of tokens is not enough. 
-# A better approach would be using RAG with chunking, embeddings and retrieving only the most relevant documents (ex. best 10 instead of all of them) 
+```
+Techically, its not a mistake, but it sends every(!) retrieved document's content to the LLM as part of the prompt.
+However, it becomes a problem when the amount of documents is huge, and can become very inefficent and can increase the token usage
+of the LLM or can fail if the amount of tokens is not enough. 
+A better approach would be using RAG with chunking, embeddings and retrieving only the most relevant documents (ex. best 10 instead of all of them)
+```
   
   prompt = f"Context:\n{context}\n\nQuestion: {question}"
   response = requests.post(
@@ -48,8 +54,10 @@ def save_answer(question, answer):
   conn.execute(
     "INSERT INTO answers (question, answer) VALUES ('" + question + "', '" + answer + "')"
   )
-  # THe same issue as before with direct insert of the user input in the query, that can be very unsafe for the data. 
-  # A proper fix of the issue is using parameterized SQL with placeholders in the actual query. 
+```
+The same issue as before with direct insert of the user input in the query, that can be very unsafe for the data. 
+A proper fix of the issue is using parameterized SQL with placeholders in the actual query.
+```
   
   conn.commit()
   conn.close()
@@ -59,9 +67,10 @@ if __name__ == "__main__":
   docs = search_documents(q)
   print(ask_llm(q, docs))
   save_answer(q, ask_llm(q, docs)) # called twice
-# The LLM is called two times for the same question, which wastes time and tokens, creating more than one issue. 
-# Instead, the response should be stored in a variable once to not lose it and then reused for printing and saving. 
-
+```
+The LLM is called two times for the same question, which wastes time and tokens, creating more than one issue. 
+Instead, the response should be stored in a variable once to not lose it and then reused for printing and saving. 
+```
 
 ----------------------------------------------------------
 ## Answers to Part 3:
